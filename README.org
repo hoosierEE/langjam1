@@ -1,0 +1,49 @@
+* Kats
+/"stak" backwards, also "cat" like concatenate with a K/
+
+- description: stack-based with arrays and lambdas
+- inspiration: Factor, K
+- novel features: none but the mix of stack + array is unusual (Uia)
+- example syntax
+  - =code= (top of stack):
+  - =[43 0 6]1-= ([42 -1 5])
+  - =[43 44 45]{x y -}:foo;[-2 0 3]foo= ([45 44 42])
+
+/The end is not the end/ because the end of the program is whatever's on top (the start) of the stack.
+
+
+* Update as of 2025/06/16 (end of langjam)
+This program kinda works:
+#+begin_src
+iex(4)> "[20] 3 -" |> parse |> eval
+17
+#+end_src
+
+...although in my mind the return value should be the list =[17]=, not the bare int =17=.
+
+More obviously buggy:
+#+begin_src
+iex(5)> "[20 10 22] 3 -" |> parse |> eval
+,* (RuntimeError) Unexpected stack at end: [22, 10, 20]
+    repl.ex:35: AstEvaluator.eval_nodes/2
+    repl.ex:40: AstEvaluator.eval_nodes/2
+    iex:5: (file)
+#+end_src
+
+This should result in =[17, 7, 19]= rather than an exception.
+Most likely I'm missing a pattern match somewhere.
+
+** What I learned
+I leaned heavily on an LLM (perplexity) for help with translating my ideas into Elixir code.
+This felt a little different from my similar experience using an LLM to help me sketch out a Go program, because the idioms of Elixir are less familiar to me and therefore I had fewer preconceived notions about what good code "should" look like.
+
+When I ran into errors the LLM was not very helpful. This could have been because of the just slightly-off-the-beaten-path language (which has lists) compared to what's presumably more represented in the training data (simple stack-based evaluators). I'd try to debug an issue using the LLM and it would make up problems that weren't there.
+
+In some ways this is actually a good thing, because it more quickly exposes the limitations of the LLM as a coding assistant compared to working with a much more idiomatic and popular language like Go, where the errors will show up later and be more subtle (and harder to debug).
+
+** TODO
+Currently it's only functional as a postfix calculator with no-op brackets around the scalar integer arguments, so the to-do list is long and many fundamental features remain:
+- debug list construction
+- debug ast evaluation
+- add functions
+- add names
